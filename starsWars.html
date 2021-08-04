@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>star Wars</title>
+    <style>
+        input {
+            width: 200px;
+
+        }
+
+        #movies {
+            height: 200px;
+            width: 250px;
+            border: 1px solid black;
+            border-top: none;
+            overflow: scroll;
+            margin-left: 500px;
+            display: none;
+        }
+        #query{
+      height: 50px;
+     width: 650px;
+     border-radius: 10px;
+     background-color: rgb(45,47,48);
+     margin-top: 20px;
+     color: white;
+        }
+    #logo{
+     height: 100px;
+     width: 200px;
+     margin-top: 100px;
+     background: transparent;
+ }
+ #parent{
+     text-align: center;
+     height: 560px;
+     width: 100%;
+     background-image: url("https://media.giphy.com/media/9bTjZrytydVRK/giphy.gif");
+    background-size: cover;
+ }
+    </style>
+</head>
+
+<body>
+    <div id="parent">
+    <img id="logo" src="https://i.ibb.co/hmbZDk2/starwars.png" alt="" />
+    <br />
+    <input oninput='throttleFunction()' type='text' id='query' placeholder="Search Characters">
+    <br/>
+    <div id="movies"></div>
+    </div>
+</body>
+
+</html>
+<script>
+    let movies_div = document.getElementById('movies');
+    var setTimerId;
+    async function searchMovies() {
+        let query = document.getElementById('query').value;
+
+
+        if (query.length <= 2) {
+            return false;
+        }
+        let res = await fetch(`http://omdbapi.com/?s=${query}&apikey=7c6266e1`);
+        // let res = await fetch(`http://omdbapi.com/?s=avengers&apikey=d806bd70`)
+
+        let data = await res.json();
+        //console.log('data:', data)
+        return data.Search;
+
+    }
+    function throttleFunction() {
+        if (setTimerId) {
+            return false;
+        }
+        setTimerId = setTimeout(() => {
+
+            main();
+            setTimerId = undefined;
+        }, 2000);
+        console.log('setTimerId:', setTimerId);
+
+    };
+    function appendMovies(d) {
+        movies_div.innerHTML = null;
+        if(d.length > 0){
+            movies_div.style.display = "block";
+        } else{
+             movies_div.style.display = "none";
+        }
+        //console.log('d:', d)
+        movies_div.style.background = "white";
+        d.forEach(({ Title }) => {
+
+            let p = document.createElement('p');
+            p.innerText = Title;
+            movies_div.append(p);
+        });
+    };
+
+
+    async function main() {
+        let movies = await searchMovies();
+        appendMovies(movies);
+    };
+</script>
